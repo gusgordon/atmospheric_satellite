@@ -3,7 +3,7 @@ Nu = h * L / k
 
 h = Nu * k / L
 
-k = 2.15 for dry air around 240 K
+k = 0.0215 W/(m*K) for dry air around 240 K
 
 https://www.sfu.ca/~mbahrami/ENSC%20388/Notes/Forced%20Convection.pdf
 for Pr > 0.6 laminar:
@@ -50,10 +50,8 @@ dQ/dt = 0
 from scipy import optimize, constants
 
 # When the plane is flying through the air, what will its temperature be?
-# After running this and playing around with it, it was obvious that the plane temperature
-# is pretty much equivalent to the temperature of air it's flying through
-# even accounting for heating due to air compression in front of the wing, heating from waste heat,
-# and sun radiation.
+# After running this and playing around with it, the wing temperature is still
+# close enough for this simplified model's constant solar-cell-efficiency assumption.
 def get_craft_temperature(wing_area_lam, wing_area_turb, Re_lam, Re_turb, char_length,
                           T_air, heat_waste, solar_irrad, albedo,
                           absorbance=0.8, emissivity=0.8): # Defaults for wing
@@ -62,7 +60,7 @@ def get_craft_temperature(wing_area_lam, wing_area_turb, Re_lam, Re_turb, char_l
     # Assume entire aircraft is of same temperature
 
     initial_guess = 240 # Guess 240 K for initial temp
-    air_thermal_conductivity = 2.15 # for dry air around 240k
+    air_thermal_conductivity = 0.0215 # W/(m*K), for dry air around 240 K
     Pr = 0.725 # Prandtl number for dry air around 240 K
     
     wing_area = wing_area_lam + wing_area_turb
@@ -78,8 +76,8 @@ def get_craft_temperature(wing_area_lam, wing_area_turb, Re_lam, Re_turb, char_l
                          (2 * wing_area * constants.Stefan_Boltzmann * emissivity * x ** 4))
     return optimize.fsolve(temp_de, initial_guess)[0]
 
-# Confirm craft temp ~= air temp
-assert(239 < get_craft_temperature(7.0, 3.0, 2e5, 7e5, 1.1, 240.0, 50, 1000, 100) < 241)
+# Confirm the heat-balance result remains in a plausible range.
+assert(268 < get_craft_temperature(7.0, 3.0, 2e5, 7e5, 1.1, 240.0, 50, 1000, 100) < 273)
 
 # This can also be used to get the power requirement for heating battery pack
 # Assume insulation (aerogel etc.) blocks all convection and conduction
