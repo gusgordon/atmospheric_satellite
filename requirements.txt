@@ -4,7 +4,7 @@ attrs==19.1.0
 backports-abc==0.5
 backports.functools-lru-cache==1.5
 backports.shutil-get-terminal-size==1.0.0
-bleach==3.1.0
+bleach==3.1.1
 configparser==3.7.4
 cycler==0.10.0
 decorator==4.4.0
